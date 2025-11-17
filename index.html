@@ -1,50 +1,34 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gotuj z Lodówki</title>
-    <style>
-        body { font-family: Arial; padding: 20px; background: #f5f5f5; }
-        h1 { color: #333; }
-        #preview { max-width: 300px; margin-top: 20px; display: none; }
-        #products { margin-top: 20px; background: white; padding: 10px; border-radius: 8px; display:none; }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Gotuj z Lodówki</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
-    <h1>📸 Gotuj z Lodówki</h1>
-    <p>Zrób zdjęcie lodówki, a AI rozpozna produkty i znajdzie przepisy.</p>
+  <div class="container">
+    <h1>🍳 Gotuj z Lodówki</h1>
+    <p>Zrób zdjęcie lodówki, wklej swój <strong>OpenAI API key</strong> (lokalnie, tylko w tej przeglądarce) i kliknij „Analizuj zdjęcie”.</p>
 
-    <input type="file" id="photoInput" accept="image/*">
+    <label>
+      OpenAI API key (z platform.openai.com):
+      <input type="password" id="apiKey" placeholder="sk-..." />
+    </label>
 
-    <img id="preview" />
+    <label>
+      Zdjęcie lodówki:
+      <input type="file" id="photoInput" accept="image/*" />
+    </label>
 
-    <div id="products">
-        <h3>Rozpoznane produkty:</h3>
-        <ul id="productList"></ul>
-    </div>
+    <button id="analyzeButton">Analizuj zdjęcie</button>
 
-    <script>
-        const input = document.getElementById("photoInput");
-        const preview = document.getElementById("preview");
+    <p id="status"></p>
 
-        input.addEventListener("change", () => {
-            const file = input.files[0];
-            preview.src = URL.createObjectURL(file);
-            preview.style.display = "block";
+    <h2>Wynik</h2>
+    <pre id="result"></pre>
+  </div>
 
-            // symulacja AI (prawdziwe AI dodamy później)
-            setTimeout(() => {
-                document.getElementById("products").style.display = "block";
-                document.getElementById("productList").innerHTML = `
-                    <li>jajka</li>
-                    <li>pomidor</li>
-                    <li>ser</li>
-                    <li>masło</li>
-                `;
-            }, 1000);
-        });
-    </script>
+  <script src="app.js"></script>
 </body>
 </html>
