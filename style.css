@@ -1,0 +1,24 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background: #f3f3f3;
+}
+
+h1 {
+    text-align: center;
+}
+
+.container {
+    max-width: 500px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+#results, #recipes {
+    background: #fff8e1;
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 10px;
+}
