@@ -1,51 +1,58 @@
-// Proste rozpoznawanie produktów przez OpenAI Vision API
-async function analyzeImage() {
-    const fileInput = document.getElementById("photo");
-    const resultBox = document.getElementById("results");
-    const recipesBox = document.getElementById("recipes");
+// ==== CONFIG ====
+const OPENAI_API_KEY = "TU_WKLEISZ_SWÓJ_KLUCZ"; 
 
-    if (!fileInput.files.length) {
-        alert("Dodaj zdjęcie lodówki!");
-        return;
-    }
+// ==== ELEMENTY HTML ====
+const uploadInput = document.getElementById("upload");
+const previewImg = document.getElementById("preview");
+const resultsBox = document.getElementById("results");
 
-    const imageFile = fileInput.files[0];
-    resultBox.innerHTML = "⏳ Analizuję zdjęcie...";
+// ==== OBSŁUGA ZDJĘCIA ====
+uploadInput.addEventListener("change", function () {
+    const file = this.files[0];
+    if (!file) return;
 
-    // OpenAI Vision API
-    const apiKey = ""; // <- TU WSTAWISZ SWOJE API KEY
-    const formData = new FormData();
-    formData.append("file", imageFile);
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        previewImg.src = e.target.result;
+        previewImg.style.display = "block";
+        analyzeImage(e.target.result);
+    };
+    reader.readAsDataURL(file);
+});
 
-    const response = await fetch("https://api.openai.com/v1/images/vision", {
+// ==== FUNKCJA AI: ROZPOZNAWANIE PRODUKTÓW ====
+async function analyzeImage(base64Image) {
+    resultsBox.innerHTML = "⏳ Analizuję zdjęcie...";
+
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: {
-            Authorization: `Bearer ${apiKey}`
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${OPENAI_API_KEY}`
         },
-        body: formData
+        body: JSON.stringify({
+            model: "gpt-4o-mini",
+            messages: [
+                {
+                    role: "user",
+                    content: [
+                        { type: "text", text: "Analyze the food items in this fridge image and list ingredients only." },
+                        { type: "image_url", image_url: { url: base64Image } }
+                    ]
+                }
+            ]
+        })
     });
 
     const data = await response.json();
     console.log(data);
 
-    const products = data.labels || [];
+    const productList = data.choices?.[0]?.message?.content || "Brak rozpoznanych produktów";
 
-    resultBox.innerHTML = "<h3>🥑 Wykryte produkty:</h3>" +
-        products.map(p => `• ${p}`).join("<br>");
-
-    // Prosta baza przepisów
-    const recipes = [
-        { name: "Jajecznica", needs: ["jajka", "masło"] },
-        { name: "Kurczak pieczony", needs: ["kurczak", "masło"] },
-        { name: "Kanapka z pomidorem", needs: ["pomidor", "masło"] },
-    ];
-
-    const matched = recipes.filter(r =>
-        r.needs.every(n => products.includes(n))
-    );
-
-    recipesBox.innerHTML = "<h3>🍲 Pasujące przepisy:</h3>" +
-        (matched.length
-            ? matched.map(r => "• " + r.name).join("<br>")
-            : "Brak pasujących przepisów");
+    resultsBox.innerHTML = `
+        <h3>🥕 Rozpoznane produkty:</h3>
+        <p>${productList}</p>
+        <h3>🍳 Przepisy dopasowane do składników:</h3>
+        <p>Wersja demo – tu będą przepisy</p>
+    `;
 }
